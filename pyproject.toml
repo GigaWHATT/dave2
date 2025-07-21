@@ -1,0 +1,15 @@
+[project]
+name = "dave-gui"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "dotenv>=0.9.9",
+    "loguru>=0.7.3",
+    "mcp>=1.11.0",
+    "openai>=1.97.0",
+    "py-trello>=0.20.1",
+    "pyqt6>=6.9.1",
+    "qasync>=0.27.1",
+]

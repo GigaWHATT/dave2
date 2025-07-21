@@ -1,10 +1,7 @@
 # ---------IMPORTS---------
-
 import os
 from typing import Optional
-from loguru import logger
 import json
-import asyncio
 import requests
 
 from trello import TrelloClient
@@ -12,11 +9,9 @@ from trello import TrelloClient
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 
-from zoneinfo import ZoneInfo
 
 
 # ----------INIT------------
-
 mcp = FastMCP("dave")
 
 load_dotenv()
@@ -34,7 +29,6 @@ client = TrelloClient(
 
 
 # ---------FUNCTIONS----------
-
 def format_card(card, trello_list) -> dict:
     return {
         'id': card.id,
@@ -347,7 +341,6 @@ async def archive_card(card_name: str) -> dict:
         response = requests.put(url, params=query)
 
         if response.status_code != 200:
-            logger.info("In error of response.")
             return response.text
 
         # return response.json()
@@ -400,7 +393,6 @@ async def restore_card(card_name: str) -> dict:
         response = requests.put(url, params=query)
 
         if response.status_code != 200:
-            logger.info("In error of response.")
             return response.text
 
         return response.json()
@@ -487,22 +479,6 @@ async def get_members() -> dict:
 
 
 # ----------RUN-----------
-
 if __name__ == "__main__":
     board = client.get_board(BOARD_ID)
     mcp.run()
-
-
-# TODO: ----------NEW FUNC--------------
-# TODO: archive list functionality??
-# TODO: restore list from archives??
-# TODO: extension VScode
-# TODO: francais
-
-# TODO: ----------FIXES-------------
-
-# TODO: ----------OPTIM-------------
-# TODO: make the LLM 'autocomplete' list names in case of typo --> I think it already does that --> it autocompletes but does not correct typos
-
-# TODO: ----------DOCS--------------
-# TODO: Make a README.md

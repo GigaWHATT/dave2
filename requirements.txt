@@ -1,0 +1,7 @@
+dotenv
+loguru
+mcp
+openai
+py-trello
+pyqt6
+qasync
