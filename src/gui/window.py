@@ -25,7 +25,7 @@ class ChatWindow(QWidget):
         super().__init__()
 
         # Window style
-        self.setWindowIcon(QIcon("../dave.png"))
+        self.setWindowIcon(QIcon("./dave.png"))
         self.setWindowTitle("Dave")
         self.setMinimumSize(400, 600)
         self.setMaximumSize(800, 900)  # Set your preferred max size
@@ -117,16 +117,6 @@ class ChatWindow(QWidget):
         else:
             # Scroll to bottom
             scrollbar.setValue(scrollbar.maximum())
-
-    def resizeEvent(self, event):
-        """ On resize of window, print new size
-
-        Args:
-            event (event): Contains resize event information
-        """
-        size = event.size()
-        super().resizeEvent(event)
-        print(size)
 
     @asyncSlot()
     async def on_send_clicked(self):

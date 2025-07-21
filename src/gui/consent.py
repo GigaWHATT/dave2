@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton
-from concurrent.futures import Future
+from asyncio import Future
 
 
 # ----------CONSENT DIALOG BOX-----------

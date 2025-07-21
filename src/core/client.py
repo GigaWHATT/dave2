@@ -9,7 +9,7 @@ from mcp.client.stdio import stdio_client
 
 from dotenv import load_dotenv
 
-from gui.window import ChatWindow
+from ..gui.window import ChatWindow
 import sys
 from PyQt6.QtWidgets import QApplication
 from qasync import QEventLoop, QApplication
@@ -185,8 +185,8 @@ class MCPClient():
         return result_text
 
 
-#----------MAIN LOOP-----------
-async def main():
+#----------INIT LOOP-----------
+async def init(app):
     """ Connects to MCP server, updates GUI and handles user queries.    
     """
     # Session manager
@@ -214,7 +214,7 @@ async def main():
             # Collect server parameters
             server_params = StdioServerParameters(
                 command='python',
-                args=['server.py'],
+                args=['src/core/server.py'],
                 env=None
             )
 

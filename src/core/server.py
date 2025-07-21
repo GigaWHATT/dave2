@@ -478,7 +478,7 @@ async def get_members() -> dict:
         return {"error": str(e)}
 
 
-# ----------RUN-----------
+# ----------RUN SERVER------------
 if __name__ == "__main__":
     board = client.get_board(BOARD_ID)
     mcp.run()

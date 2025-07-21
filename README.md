@@ -50,8 +50,7 @@ Dave's default model is gpt-4o provided by Azure OpenAI. **If you wish to change
 ### Run Dave
 Once you're all set up, run the client using the following command in your terminal:
 ```bash
-cd src
-python client.py
+python -m main.py
 ```
 After a moment, a window will appear with a message confirming Dave has connected to the server and collected the tools provided.
 
