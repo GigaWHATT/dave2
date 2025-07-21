@@ -10,9 +10,6 @@ from mcp.client.stdio import stdio_client
 from dotenv import load_dotenv
 
 from ..gui.window import ChatWindow
-import sys
-from PyQt6.QtWidgets import QApplication
-from qasync import QEventLoop, QApplication
 
 
 #----------INITIALIZATION-----------
