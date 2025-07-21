@@ -258,27 +258,3 @@ async def init(app):
         finally:
             await exit_stack.aclose()
             # Do not call app.quit() here
-
-
-#----------RUNNING THE APPLICATION-----------
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    loop = QEventLoop(app)
-    asyncio.set_event_loop(loop)
-    
-    with loop:
-        
-        main_task = loop.create_task(main())
-        
-        try:
-            loop.run_forever()
-        finally:
-            # Wait for main() to finish before cancelling other tasks
-            loop.run_until_complete(main_task)
-            # Now cancel all other running tasks
-            tasks = [t for t in asyncio.all_tasks(loop) if not t.done()]
-            for task in tasks:
-                task.cancel()
-            loop.run_until_complete(asyncio.gather(
-                *tasks, return_exceptions=True))
-            loop.run_until_complete(loop.shutdown_asyncgens())
