@@ -185,7 +185,7 @@ Here is an extensive list of Dave's tools:
 ---
 
 ## Extending Dave
-If you'd like, you can add your own tools to Dave's toolshed in the ```client.py``` file! You can also use Dave for other Trello boards, simply by changing the ```BOARD_ID```and ```BOARD_NAME```in your ```.env``` file.
+If you'd like, you can add your own tools to Dave's toolshed in the ```client.py``` file! You can also use Dave for other Trello boards, simply by changing the ```BOARD_ID```and ```BOARD_NAME```in your ```.env``` file. You can also change the ```SYSTEM_PROMPT``` in the ```client.py```file to customise the agent.
 
 ---
 
