@@ -18,8 +18,8 @@ Features include:
 ## Setup
 ### Cloning the repo
 ```bash
-git clone https://github.com/GigaWHATT/dave-gui.git
-cd dave-gui
+git clone https://github.com/GigaWHATT/dave2.git
+cd dave2
 ```
 
 ### Installing Requirements
@@ -29,6 +29,7 @@ pip install -r requirements.txt
 or 
 ```bash
 uv add -r requirements.txt
+source .venv/Scripts/activate
 ```
 
 ### Setting up environment variables
@@ -38,7 +39,6 @@ TRELLO_API_KEY=790cf33513f03c8187aab39ac2d41d73
 TRELLO_API_SECRET=your_trello_api_secret
 TRELLO_API_TOKEN=your_trello_api_token
 BOARD_ID=your_board_id
-BOARD_NAME=your_board_name
 ```
 You may also need your LLM's API key.
 
@@ -50,7 +50,7 @@ Dave's default model is gpt-4o provided by Azure OpenAI. **If you wish to change
 ### Run Dave
 Once you're all set up, run the client using the following command in your terminal:
 ```bash
-python -m main.py
+python -m src.main
 ```
 After a moment, a window will appear with a message confirming Dave has connected to the server and collected the tools provided.
 

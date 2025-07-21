@@ -18,7 +18,6 @@ load_dotenv()
 
 # BOARD_ID = "JDtNhDSs"
 BOARD_ID = os.getenv('BOARD_ID')
-BOARD_NAME = os.getenv('BOARD_NAME')
 
 
 client = TrelloClient(
