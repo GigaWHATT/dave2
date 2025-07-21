@@ -1,11 +1,11 @@
 # -----------IMPORTS-----------
-from .core.server import client, mcp, BOARD_ID
+from core.server import client, mcp, BOARD_ID
 import asyncio
 from qasync import QEventLoop
 from PyQt6.QtWidgets import QApplication
 import sys
-from .core.client import init
-from .gui.window import ChatWindow
+from core.client import init
+from gui.window import ChatWindow
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -13,8 +13,7 @@ from mcp.client.stdio import stdio_client
 import sys
 from PyQt6.QtWidgets import QApplication
 from qasync import QEventLoop, QApplication
-from .core.client import MCPClient
-
+from core.client import MCPClient
 
 async def main():
     """ Connects to MCP server, updates GUI and handles user queries.    
@@ -44,7 +43,7 @@ async def main():
             # Collect server parameters
             server_params = StdioServerParameters(
                 command='python',
-                args=['src/core/server.py'],
+                args=['core/server.py'],
                 env=None
             )
 

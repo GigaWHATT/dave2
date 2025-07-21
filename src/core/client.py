@@ -9,7 +9,7 @@ from mcp.client.stdio import stdio_client
 
 from dotenv import load_dotenv
 
-from ..gui.window import ChatWindow
+from gui.window import ChatWindow
 
 
 #----------INITIALIZATION-----------

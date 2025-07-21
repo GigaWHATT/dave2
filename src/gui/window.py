@@ -25,7 +25,7 @@ class ChatWindow(QWidget):
         super().__init__()
 
         # Window style
-        self.setWindowIcon(QIcon("./dave.png"))
+        self.setWindowIcon(QIcon("../dave.png"))
         self.setWindowTitle("Dave")
         self.setMinimumSize(400, 600)
         self.setMaximumSize(800, 900)  # Set your preferred max size
