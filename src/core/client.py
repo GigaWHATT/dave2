@@ -137,7 +137,7 @@ class MCPClient():
                         tool_results.append(
                             {'call': tool_name, 'result': result})
                         final_text.append(
-                            f"[Called {'prompt' if is_prompt else 'tool'} {tool_name} with arguments: {tool_args}].")
+                            f"[Called {'prompt' if is_prompt else 'tool'} {tool_name} with arguments: {tool_args}].\n")
 
                         # Update messages
                         messages.append({

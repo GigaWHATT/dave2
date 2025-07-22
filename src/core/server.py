@@ -450,7 +450,7 @@ async def filter_by_label(label_name: str) -> list:
 
 @mcp.tool()
 async def create_card_from_file(file_name: str, list_name: Optional[str] = "Divers") -> dict:
-    """ [consent] Creates a card from a file. Users may use the query "Create a card from the <file_name> file" to call this tool.
+    """ [consent] Creates a card from a file in the <cards> folder. Users may use the query "Create a card from the <file_name> file" to call this tool.
 
     Args:
         file_name (str): name of the file to create a card from
@@ -469,6 +469,56 @@ async def create_card_from_file(file_name: str, list_name: Optional[str] = "Dive
         print(f"Error: {e}")
         return {"error": str(e)}
     
+
+@mcp.tool()
+async def save_card_to_file(card_name: str, file_name: Optional[str] = None) -> dict:
+    """ [consent] Saves a card to a file in the <cards> folder. Users may use the query "Save the <card_name> card to a file" to call this tool.
+
+    Args:
+        card_name (str): name of the card to save
+        file_name (Optional[str], optional): name of the file to save the card to. Defaults to None, which will use the card's name.
+
+    Returns:
+        dict: JSON response or error
+    """
+    try:
+        card = get_card_by_name(card_name)
+        if not file_name:
+            file_name = card.name.replace(' ', '_')  # Replace spaces with underscores for filename
+
+        with open(f'../cards/{file_name}.md', 'w') as file:
+            file.write(card.description)
+
+        return {"message": f"Card '{card_name}' saved to {file_name}.md successfully."}
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"error": str(e)}
+    
+
+@mcp.tool()
+async def update_card_from_file(file_name: str, card_name: Optional[str] = None) -> dict:
+    """ [consent] Updates a card from a file in the <cards> folder. Users may use the query "Update the <card_name> card from the <file_name> file" to call this tool.
+
+    Args:
+        file_name (str): name of the file to update the card from
+        card_name (Optional[str], optional): name of the card to update. Defaults to None, which will use the file's name.
+
+    Returns:
+        dict: JSON response or error
+    """
+    try:
+        with open('../cards/'+file_name+'.md', 'r') as file:
+            content = file.read()
+
+        if not card_name:
+            card_name = file_name.replace('_', ' ')  # Replace underscores with spaces for card name
+
+        return await change_card(card_name=card_name, new_description=content)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"error": str(e)}
 
 # ---------META DATA---------
 
