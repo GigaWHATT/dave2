@@ -1,18 +1,15 @@
 # -----------IMPORTS-----------
 import os
 from openai import AzureOpenAI
-from typing import Optional
 import json
-import asyncio
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import ClientSession
 
 from dotenv import load_dotenv
 
 from gui.window import ChatWindow
 
 
-#----------INITIALIZATION-----------
+# ----------INITIALIZATION-----------
 load_dotenv()
 
 SYSTEM_PROMPT = """
@@ -36,31 +33,30 @@ If you have links in your response, format them as "Description of link (link)".
 """
 
 
-#----------CLIENT CLASS-----------
-class MCPClient():
-    """ Client class for processing queries
-    """
-    def __init__(self,exit_stack):
-        """ Initialise MCP client
+# ----------CLIENT CLASS-----------
+class MCPClient:
+    """Client class for processing queries"""
+
+    def __init__(self, exit_stack):
+        """Initialise MCP client
 
         Args:
             exit_stack (ASyncStack): session manager for async context
         """
-        self.session: Optional[ClientSession] = None
+        self.session: ClientSession | None = None
         # Session manager
         self.exit_stack = exit_stack
         # gpt-4o model
         self.azure = AzureOpenAI(
-            api_version='2024-12-01-preview',
-            azure_endpoint='https://light-rag-models.openai.azure.com/',
+            api_version="2024-12-01-preview",
+            azure_endpoint="https://light-rag-models.openai.azure.com/",
             api_key=os.getenv("AZURE_OPENAI_API_KEY"),
         )
         # GUI window
-        self.window: Optional[ChatWindow] = None
-
+        self.window: ChatWindow | None = None
 
     async def process_query(self, query: str) -> str:
-        """ Processes a query (one turn)
+        """Processes a query (one turn)
 
         Args:
             query (str): user query to process
@@ -68,32 +64,33 @@ class MCPClient():
         Returns:
             str: result reprocessed by LLM
         """
-        
+
         # Initialise message history with system prompt and user query
-        messages = [{'role': 'system', 'content': SYSTEM_PROMPT}]
-        messages.append({'role': 'user', 'content': query})
-        
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        messages.append({"role": "user", "content": query})
+
         # Format tools
         response = await self.session.list_tools()
-        available_tools = [{
-            'type': 'function',
-            'function': {
-                'name': tool.name,
-                'description': tool.description,
-                'parameters': tool.inputSchema
+        available_tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "parameters": tool.inputSchema,
+                },
             }
-        } for tool in response.tools]
+            for tool in response.tools
+        ]
 
         # Feed system prompt, query and tools to LLM
         response = self.azure.chat.completions.create(
             messages=messages,
-            tool_choice='auto',
+            tool_choice="auto",
             tools=available_tools,
             max_tokens=1000,
-            model='gpt-4o'
+            model="gpt-4o",
         )
-        
-
 
         tool_results = []
         final_text = []
@@ -109,18 +106,21 @@ class MCPClient():
                     # Load tool
                     tool_name = call.function.name
                     tool_args = json.loads(call.function.arguments)
-                    tool_desc = ''.join(
-                        [t['function']['description']
-                            for t in available_tools if t['function']['name'] == tool_name]
+                    tool_desc = "".join(
+                        [
+                            t["function"]["description"]
+                            for t in available_tools
+                            if t["function"]["name"] == tool_name
+                        ]
                     )
                     # Does the tool need consent?
-                    needs_consent = '[consent]' in tool_desc.lower()
-                    
+                    needs_consent = "[consent]" in tool_desc.lower()
+
                     # Is the tool a prompt?
-                    is_prompt = '[prompt]' in tool_desc.lower()
+                    is_prompt = "[prompt]" in tool_desc.lower()
 
                     # Ask user for consent
-                    if needs_consent == False:
+                    if not needs_consent:
                         consent = "OK"
                     else:
                         text = f"Dave wants to launch {'prompt' if is_prompt else ''} {tool_name} with arguments: {tool_args}.\nThis tool has the following description: {tool_desc}.\n"
@@ -129,129 +129,60 @@ class MCPClient():
 
                     # User consents
                     if consent.upper() == "Y" or consent.upper() == "OK":
-
                         # Collect tool call response
                         result = await self.session.call_tool(tool_name, tool_args)
 
                         # Collect logs and tool results
-                        tool_results.append(
-                            {'call': tool_name, 'result': result})
+                        tool_results.append({"call": tool_name, "result": result})
                         final_text.append(
-                            f"[Called {'prompt' if is_prompt else 'tool'} {tool_name} with arguments: {tool_args}].\n")
+                            f"[Called {'prompt' if is_prompt else 'tool'} {tool_name} with arguments: {tool_args}].\n"
+                        )
 
                         # Update messages
-                        messages.append({
-                            'role': 'assistant',
-                            'tool_calls': [{
-                                'id': call.id,
-                                'type': 'function',
-                                'function': {
-                                    'name': tool_name,
-                                    'arguments': json.dumps(tool_args)
-                                }
-                            }]
-                        })
+                        messages.append(
+                            {
+                                "role": "assistant",
+                                "tool_calls": [
+                                    {
+                                        "id": call.id,
+                                        "type": "function",
+                                        "function": {
+                                            "name": tool_name,
+                                            "arguments": json.dumps(tool_args),
+                                        },
+                                    }
+                                ],
+                            }
+                        )
 
-                        messages.append({
-                            'role': 'tool',
-                            'tool_call_id': call.id,
-                            'content': result.content
-                        })
+                        messages.append(
+                            {
+                                "role": "tool",
+                                "tool_call_id": call.id,
+                                "content": result.content,
+                            }
+                        )
 
                         # Feed LLM tool call results
                         response = self.azure.chat.completions.create(
-                            model='gpt-4o',
+                            model="gpt-4o",
                             max_tokens=1000,
                             messages=messages,
                             tools=available_tools,
-                            tool_choice='auto'
+                            tool_choice="auto",
                         )
 
                     # No consent obtained
                     else:
                         final_text.append(
-                            "Dave did not obtain the necessary consent for execution.")
-                        return '\n'.join(final_text)
-            
+                            "Dave did not obtain the necessary consent for execution."
+                        )
+                        return "\n".join(final_text)
+
             # No tool call (end of turn)
             elif message.content:
                 final_text.append(message.content)
                 break
-        result_text = '\n'.join(final_text)
-        result_text = result_text.rstrip('\n')
+        result_text = "\n".join(final_text)
+        result_text = result_text.rstrip("\n")
         return result_text
-
-
-#----------INIT LOOP-----------
-async def init(app):
-    """ Connects to MCP server, updates GUI and handles user queries.    
-    """
-    # Session manager
-    from contextlib import AsyncExitStack
-
-    # Creation of session scope
-    async with AsyncExitStack() as exit_stack:
-        
-        # Initialise client and GUI
-        client = MCPClient(exit_stack)
-        window = ChatWindow(client)
-        window.show()
-        client.window = window
-
-        quit_future = asyncio.get_event_loop().create_future()
-
-        def on_quit():
-            if not quit_future.done():
-                quit_future.set_result(None)
-        app.aboutToQuit.connect(on_quit)
-
-        try:
-            # Connect to server
-            
-            # Collect server parameters
-            server_params = StdioServerParameters(
-                command='python',
-                args=['src/core/server.py'],
-                env=None
-            )
-
-            # Launch server
-            stdio_transport = await exit_stack.enter_async_context(stdio_client(server_params))
-
-            # Load read and write channels
-            stdio, write = stdio_transport
-
-            # Format in MCP
-            session = await exit_stack.enter_async_context(ClientSession(stdio, write))
-            
-            client.session = session
-
-            # Initialise session
-            await session.initialize()
-
-
-            # Collect tools
-            response = await session.list_tools()
-            tools = response.tools
-            text = "Connected to server with tools:\n"
-            for tool in tools:
-                if '[prompt]' not in tool.description.lower():
-                    text += f'-{tool.name}\n'
-
-            # Collect prompts
-            prompts = False
-            text_prompts='\nWith the following prompts:\n'
-            for tool in tools:
-                if '[prompt]' in tool.description.lower():
-                    prompts = True
-                    text_prompts += f'-{tool.name}\n'
-            if prompts == False:
-                text_prompts = ''
-                    
-            # Send message to GUI
-            await window.receive_message(text+text_prompts)
-            
-            await quit_future  # Wait for the Qt app to quit
-        finally:
-            await exit_stack.aclose()
-            # Do not call app.quit() here

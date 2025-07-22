@@ -1,4 +1,13 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLineEdit, QPushButton, QLabel, QSizePolicy, QHBoxLayout
+from PyQt6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QScrollArea,
+    QLineEdit,
+    QPushButton,
+    QLabel,
+    QSizePolicy,
+    QHBoxLayout,
+)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 import asyncio
@@ -10,14 +19,14 @@ from qasync import asyncSlot
 
 # ----------CHAT WINDOW-----------
 class ChatWindow(QWidget):
-    """ Displays chat interface
+    """Displays chat interface
 
     Args:
         QWidget (class): container
     """
 
     def __init__(self, client):
-        """ Initialise chat window
+        """Initialise chat window
         Args:
             client (MCPClient): client used to communicate with MCP server
         """
@@ -31,11 +40,13 @@ class ChatWindow(QWidget):
         self.setMaximumSize(800, 900)  # Set your preferred max size
 
         # Disable maximize button
-        self.setWindowFlags(self.windowFlags() & ~
-                            Qt.WindowType.WindowMaximizeButtonHint)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowType.WindowMaximizeButtonHint
+        )
 
         self.setStyleSheet(
-            "background-color: #1a1a1a; color: #fff; font-family: Arial, sans-serif; font-size: 14px;")
+            "background-color: #1a1a1a; color: #fff; font-family: Arial, sans-serif; font-size: 14px;"
+        )
 
         self.client = client
 
@@ -105,14 +116,14 @@ class ChatWindow(QWidget):
         """)
 
     def scroll_to_bottom(self, progressive=False):
-        """ Manages window scrolling
+        """Manages window scrolling
 
         Args:
             progressive (bool, optional): scroll during message send or at the end. Defaults to False.
         """
         scrollbar = self.scroll_area.verticalScrollBar()
         if progressive:
-            new_value = min(scrollbar.value()+3, scrollbar.maximum())
+            new_value = min(scrollbar.value() + 3, scrollbar.maximum())
             scrollbar.setValue(new_value)
         else:
             # Scroll to bottom
@@ -120,20 +131,17 @@ class ChatWindow(QWidget):
 
     @asyncSlot()
     async def on_send_clicked(self):
-        """ Handles async await for send_message()
-        """
+        """Handles async await for send_message()"""
         await self.send_message()
 
     async def send_message(self):
-        """ Send message to MCP client from user for processing and display message
-        """
+        """Send message to MCP client from user for processing and display message"""
         # Formatting
         text = self.line.text()
 
         # Display message
         self.line.clear()
-        user_bubble = ChatBubble(
-            text, is_user=True, on_done=self.scroll_to_bottom)
+        user_bubble = ChatBubble(text, is_user=True, on_done=self.scroll_to_bottom)
 
         # Name label above bubble
         name_label = QLabel("User")
@@ -154,14 +162,15 @@ class ChatWindow(QWidget):
         h_layout.addLayout(v_layout)
         h_layout.setContentsMargins(0, 0, 0, 0)
         container.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum
+        )
         self.chat_layout.addWidget(container)
         while user_bubble.done is False:
             await asyncio.sleep(0.01)  # Allow GUI to update
-        response = await self.handle_query(text)  # Process query
+        await self.handle_query(text)  # Process query
 
     async def ask_user_consent(self, message: str) -> str:
-        """ Displays user consent dialog box
+        """Displays user consent dialog box
 
         Args:
             message (str): informs user on tool call and arguments needing consent
@@ -174,20 +183,19 @@ class ChatWindow(QWidget):
         return await dialog.result
 
     async def handle_query(self, query: str):
-        """ Launch process query and display result in chat window
+        """Launch process query and display result in chat window
 
         Args:
             query (str): user query
         """
         try:
-            
             response = await self.client.process_query(query)
             await self.receive_message(response)
         except Exception as e:
-            await self.receive_message(f'Error: {e}')
+            await self.receive_message(f"Error: {e}")
 
     async def receive_message(self, response):
-        """ Display message by agent
+        """Display message by agent
 
         Args:
             response (str): result from user query processing
@@ -215,5 +223,6 @@ class ChatWindow(QWidget):
         h_layout.addStretch()  # Push to left
         h_layout.setContentsMargins(0, 0, 0, 0)
         container.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum
+        )
         self.chat_layout.addWidget(container)

@@ -5,14 +5,14 @@ from PyQt6.QtCore import Qt, QTimer
 
 # ----------CHAT BUBBLE-----------
 class ChatBubble(QLabel):
-    """ Chat Bubble class for displaying messages in window
+    """Chat Bubble class for displaying messages in window
 
     Args:
         QLabel (class): displays text
     """
 
     def __init__(self, full_text, is_user=False, on_done=None):
-        """ Initializes chat bubble
+        """Initializes chat bubble
 
         Args:
             full_text (str): text displayed in final bubble
@@ -29,8 +29,7 @@ class ChatBubble(QLabel):
             f"padding: 10px; margin: 5px; border-radius: {radius}; background-color: {colour};"
             "max-width: 600px;"  # Limit bubble width for readability
         )
-        self.setSizePolicy(QSizePolicy.Policy.Expanding,
-                           QSizePolicy.Policy.Maximum)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
         self.setTextFormat(Qt.TextFormat.RichText)  # Enable HTML formatting
         self.setOpenExternalLinks(True)  # <-- This makes links open in browser
         self.timer = QTimer()
@@ -40,7 +39,7 @@ class ChatBubble(QLabel):
         self.done = False
 
     def format_brackets(self, text) -> str:
-        """ Uses HTML to format text before displaying it on the window
+        """Uses HTML to format text before displaying it on the window
 
         Args:
             text (str): text to format
@@ -53,7 +52,7 @@ class ChatBubble(QLabel):
         called_tool = re.sub(
             r"\[Called tool ([^\]]+)\]",
             r'<span style="color:#fff; font-style:italic;">[Called tool \1]</span>',
-            text
+            text,
         )
 
         # Remove double asterisks
@@ -62,15 +61,17 @@ class ChatBubble(QLabel):
         # Make url's clickable "(here)"
         url_pattern = r"\((https?://[^\s]+)\)"
         links = re.sub(
-            url_pattern, r'(<a href="\1" style="color:#ca66a0; text-decoration:underline;">here</a>)', no_stars)
+            url_pattern,
+            r'(<a href="\1" style="color:#ca66a0; text-decoration:underline;">here</a>)',
+            no_stars,
+        )
 
         # Replace newlines with <br>
-        html_text = links.replace('\n', '<br>')
+        html_text = links.replace("\n", "<br>")
         return html_text
 
     def update_text(self):
-        """ Progressively updates the text in the bubble
-        """
+        """Progressively updates the text in the bubble"""
         if self.index < len(self.full_text):
             self.displayed_text += self.full_text[self.index]
             formatted = self.format_brackets(self.displayed_text)

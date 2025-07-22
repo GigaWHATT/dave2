@@ -4,14 +4,14 @@ from asyncio import Future
 
 # ----------CONSENT DIALOG BOX-----------
 class ConsentDialog(QDialog):
-    """ Consent dialog box class for user consent on tool calls
+    """Consent dialog box class for user consent on tool calls
 
     Args:
         QDialog (class): dialog box
     """
 
     def __init__(self, message: str):
-        """ Initialises consent dialog box
+        """Initialises consent dialog box
 
         Args:
             message (str): message to display to user for consent
@@ -46,7 +46,7 @@ class ConsentDialog(QDialog):
         super().closeEvent(event)
 
     def finish(self, value: str):
-        """ Sets the result of the Future and closes the dialog
+        """Sets the result of the Future and closes the dialog
 
         Args:
             value (str): consent
