@@ -40,6 +40,12 @@ TRELLO_API_SECRET=your_trello_api_secret
 TRELLO_API_TOKEN=your_trello_api_token
 BOARD_ID=your_board_id
 ```
+You can do this straight from the command line using:
+```bash
+echo VARIABLE_NAME=value >>.env
+```
+Replacing value by your key or ID.
+
 You may also need your LLM's API key.
 
 To find your Trello API Key, Secret and Token, I invite you to visit: https://altosio.com/trello-migration-guide/.
