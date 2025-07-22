@@ -448,6 +448,28 @@ async def filter_by_label(label_name: str) -> list:
     return filtered
 
 
+@mcp.tool()
+async def create_card_from_file(file_name: str, list_name: Optional[str] = "Divers") -> dict:
+    """ [consent] Creates a card from a file. Users may use the query "Create a card from the <file_name> file" to call this tool.
+
+    Args:
+        file_name (str): name of the file to create a card from
+        list_name (Optional[str], optional): name of the list in which the card will reside. Defaults to "Divers".
+
+    Returns:
+        dict: JSON response or error
+    """
+    try:
+        with open('../cards/'+file_name+'.md', 'r') as file:
+            content = file.read()
+
+        return await create_card(name=file_name, description=content, list_name=list_name)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"error": str(e)}
+    
+
 # ---------META DATA---------
 
 @mcp.tool()
